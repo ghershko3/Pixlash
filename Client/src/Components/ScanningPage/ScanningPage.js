@@ -3,47 +3,49 @@ import { Route } from 'react-router-dom';
 import QrReader from 'react-qr-scanner'
 
 class ScanningPage extends Component {
- constructor(props){
+  constructor(props) {
     super(props)
     this.state = {
       delay: 100,
       result: 'No result',
     }
- 
-    this.handleScan = this.handleScan.bind(this)
+
   }
-  handleScan(data){
+  handleScan = (data, history) => {
     this.setState({
       result: data,
     })
+    if (data){
+      history.push('/PixlePage')
+    }
   }
-  handleError(err){
+  handleError(err) {
     console.error(err)
   }
 
-   render() {
-const previewStyle = {
+  render() {
+    const previewStyle = {
       height: 300,
       width: 300,
     }
 
-        return (
-       <div>
+    return (
+      <div>
         <h1> You are going to be a part of a big picture!</h1>
-        <Route render={({ history}) => (
-            <QrReader
-          delay={this.state.delay}
-          style={previewStyle}
-          onError={this.handleError}
-          onScan={() => { history.push('/ScanningPage') }}
+        <Route render={({ history }) => (
+          <QrReader          
+            delay={this.state.delay}
+            style={previewStyle}
+            onError={this.handleError}
+            onScan={(data) => { this.handleScan(data, history) }}
           />
-  )} />
+        )} />
 
-        
+
         <p>{this.state.result} </p>
-        </div>
-        );
-    }
+      </div>
+    );
+  }
 }
 
 export default ScanningPage;
