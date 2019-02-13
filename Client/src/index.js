@@ -3,12 +3,14 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import { Route, Link, BrowserRouter as Router } from 'react-router-dom'
+import App from './App'
 import DrowingPage from './Components/DrowingPage/DrowingFile'
 
 const routing = (
     <Router>
         <div>
-        <Route path="/DrowingPage" component={DrowingPage} />
+            <Route exact path="/" component={App} />
+            <Route path="/DrowingPage" component={DrowingPage} />
         </div>
     </Router>
 )
