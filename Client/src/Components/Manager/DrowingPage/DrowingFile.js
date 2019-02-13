@@ -17,7 +17,9 @@ class DrowingFile extends Component {
             {connection: 2, location: [1, 2]},
             {connection: 3, location: [2, 1]},
             {connection: 4, location: [2, 2]},
-        ]
+            {connection: 4, location: [3, 1]},
+        ],
+        selectedClients: []
     };
 
     handleSelectChange = event => {
@@ -28,9 +30,24 @@ class DrowingFile extends Component {
         this.setState({ [name]: event.target.value });
     };
 
+    editSelectedClients = (client, action) => {
+        switch (action) {
+            case 'ADD':
+                [...selectedClients, client]
+                break;
+            case 'RM':
+                selectedClients.map(c => {if(c.id != client.id) return c})
+                break;
+            case 'CHECK':
+                selectedClients.map(c => {if(c.id != client.id) return c})
+                break;
+        }  
+        
+    }
+
     render() {
         const { classes } = this.props
-        const { selectedType, inputToDraw, areaMapping } = this.state
+        const { selectedType, inputToDraw, areaMapping, selectedClients } = this.state
         return (
             <form noValidate autoComplete="off"> 
                 <Grid container direction={"column"} alignItems={"center"} justify={"center"} style={{ minHeight: '100vh' }}>
@@ -43,7 +60,7 @@ class DrowingFile extends Component {
                     </Grid>}
                     {selectedType === 'Draw' && 
                     <Grid item xs={12} style={{ height: '70vh', width: '90vw' }}>
-                        <BoxToDrow areaMapping={areaMapping}/>
+                        <BoxToDrow areaMapping={areaMapping} selectedClients={selectedClients}/>
                     </Grid>}
                     {selectedType !== undefined && 
                     <Grid item xs={12}>

@@ -5,7 +5,6 @@ import * as serviceWorker from './serviceWorker';
 import { Route, Link, BrowserRouter as Router } from 'react-router-dom'
 import App from './App'
 import DrowingPage from './Components/Manager/DrowingPage/DrowingFile'
-import DrowingPage from './Components/DrowingPage/DrowingFile'
 import ScanningPage from './Components/ScanningPage/ScanningPage'
 import PixlePage from './Components/PixlePage/PixlePage'
 

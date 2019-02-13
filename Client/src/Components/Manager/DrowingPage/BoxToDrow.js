@@ -11,16 +11,24 @@ import Select from '@material-ui/core/Select';
 
 class SimpleSelect extends React.Component {
 
+    markSquare = (connection) => {
+        alert(connection.target.id)
+    }
+
     render() {
         
         const { classes, muiTheme, areaMapping } = this.props;
         
-        const matrixLength = _.maxBy(areaMapping, 'location').location
+        const matrixHeight = _.maxBy(areaMapping, 'location[0]').location[0]
+        const matrixWidth = _.maxBy(areaMapping, 'location[1]').location[1]
 
         return (
             <div className={classes.root} style={{ height: '100%', width: '100%' }}>
                 {areaMapping.map(usr =>  
-                    <div style={{height: `100 / ${areaMapping.length}`, width: `100 / ${areaMapping.length}`, boxShadow:'0px 0px 0px 1px black inset'}}>
+                    <div 
+                        id={usr.connection} 
+                        style={{height: `${100 / matrixHeight}%`, width: `${100 / matrixWidth}%`, boxShadow:'0px 0px 0px 1px black inset'}}
+                        onMouseEnter={(event) => {this.markSquare(event)}}>
                     </div>)}
             </div>
         )
@@ -28,10 +36,6 @@ class SimpleSelect extends React.Component {
 }
 
 const styles = () => ({
-    root: {
-        height: '100%',
-        width: '100%',
-    },
   });
   
 
