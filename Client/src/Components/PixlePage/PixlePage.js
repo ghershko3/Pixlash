@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client'
+import Grid from '@material-ui/core/Grid';
+import Icon from '@material-ui/core/Icon';
+
 
 class PixlePage extends Component {
     constructor () {
@@ -17,15 +20,18 @@ class PixlePage extends Component {
 
      render() {
         return (
-       <div>
-        <h1> You are going to be a part of a big picture!</h1>
-        <div>
-            row: {this.state.row}
-        </div>
-        <div>
-            col: {this.state.col}
-        </div>
-  </div>
+            <Grid container direction={"column"} alignItems={"center"} justify={"center"} style={{ minHeight: '100vh' }}>
+                <Grid item>
+                    <Icon color="secondary">done_outline</Icon>
+                </Grid>
+                <Grid item>
+                    GREAT! your'e in!
+                </Grid>
+                <Grid item>
+                    row: {this.state.row}
+                    col: {this.state.col}
+                </Grid>
+            </Grid>
         );
     }
 }

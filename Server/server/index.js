@@ -52,24 +52,6 @@ io.on('connection', socket => {
             socket.on("disconnect", () => {
                 admin = null;
             });
-
-            socket.on('turnOn', (turnOn) => {
-                for (let currRow = 0; currRow < matrix.length; currRow++) {
-                    for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
-                        if (turnOn.indexOf(matrix[currRow][currCol].id) !== -1) {
-                            matrix[currRow][currCol].emit('turn on', '');
-                        }
-                    }
-                }
-            });
-
-            socket.on('turnOffAll', () => {
-                for (let currRow = 0; currRow < matrix.length; currRow++) {
-                    for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
-                        matrix[currRow][currCol].emit('turn off', '');
-                    }
-                }
-            })
         } else {
             let currColIndex = 0, currRowIndex = 0;
             let setCol = 1, setRow = 1;
@@ -108,6 +90,24 @@ io.on('connection', socket => {
         return true;
     })
 });
+
+io.on('turnOn', (turnOn) => {
+    for (let currRow = 0; currRow < matrix.length; currRow++) {
+        for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
+            if (turnOn.indexOf(matrix[currRow][currCol].id) !== -1) {
+                matrix[currRow][currCol].emit('turn on', '');
+            }
+        }
+    }
+});
+
+io.on('turnOffAll', () => {
+    for (let currRow = 0; currRow < matrix.length; currRow++) {
+        for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
+            matrix[currRow][currCol].emit('turn off', '');
+        }
+    }
+})
 
 app.use('/api/admin', (req, res) => {
     res.send();

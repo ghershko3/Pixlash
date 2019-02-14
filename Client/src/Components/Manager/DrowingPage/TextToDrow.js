@@ -15,15 +15,16 @@ class TextFields extends React.Component {
 
 
   render() {
-    const { classes, inputToDraw, handleInputChange } = this.props;
+    const { classes, input, handleInputChange, lbl, dis } = this.props;
 
     return (
         <TextField
+          disabled={dis || false}
           id="inputToDraw"
-          label="Text To Draw"
+          label={lbl}
           className={classes.textField}
-          value={inputToDraw}
-          onChange={handleInputChange('inputToDraw')}
+          value={input}
+          onChange={handleInputChange('input')}
           margin="normal"
         />
     );

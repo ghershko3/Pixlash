@@ -3,17 +3,53 @@ import logo from '../../logo.png';
 import { Route } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 import QRCode from './QRCode'
+import Grid from '@material-ui/core/Grid';
+import Txt from '../Manager/DrowingPage/TextToDrow'
+import Button from '@material-ui/core/Button';
+import Slide from '@material-ui/core/Slide';
+import Icon from '@material-ui/core/Icon';
 import io from 'socket.io-client'
 
 class CreateNew extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      value: false,
-      count: 0
+    constructor(props){
+        super(props)
+        this.state={
+            value: false,
+            input: undefined,
+            dis: false,
+            checked: true,
+            count: 0
+        }
     }
-  }
 
+    handleInputChange = name => event => {
+        this.setState({ [name]: event.target.value });
+    };
+    
+    handleTextDisable = val => {
+        this.setState({ dis: val });
+    };
+
+    handleClick = () => {
+        this.handleTextDisable(true)
+        this.setState({value:true})
+    }
+
+    GetCounter = async () => {
+        try {
+            const req = await fetch('/api/getClientsCount')
+            const json = await req.json()
+            this.setState({ count: json.count })
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    handleMovePage = (history) => {
+        history.push('/drowingPage')
+    }
+    
   GetCounter = async () => {
       try {
           debugger
@@ -37,33 +73,51 @@ class CreateNew extends Component {
         // fetch('/api/admin')
     }
 
-    render() {
-        const { value, count } = this.state
+
+     render() {
+        const {value, input, dis, checked, count} = this.state
         return (
-            <div>
-        <h1> You are going to be a part of a big picture!</h1>
-        <form>
-          <label>
-            Name:
-    <input type="text" name="name" />
-          </label>
-          <button
-            type='button'
-            onClick={this.click}
-          >
-            Click Me!
-    </button>
-        </form>
-
-        {value &&
-          <Fragment>
-            <QRCode />
-            <h3>{count}</h3>
-          </Fragment>}
-
-      </div>
-    );
-  }
+            <Grid container direction={"column"} alignItems={"center"} justify={"space-around"} style={{ minHeight: '100vh' }}>
+                <Grid item>
+                    <Slide direction="up" in={checked} unmountOnEnter>
+                        <Grid container direction={"column"} alignItems={"center"} justify={"center"}>
+                            {!dis && <Grid item> Enter your project name to start!</Grid>}
+                            <Grid item>
+                                <Txt input={input} handleInputChange={this.handleInputChange} lbl={"Project's Name"} dis={dis}/>
+                            </Grid>
+                            <Grid item>
+                                <Button 
+                                    disabled={dis}
+                                    variant="outlined" 
+                                    color="secondary"
+                                    onClick={() => { this.handleClick() }}
+                                    >
+                                    Click Me!
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Slide>
+                </Grid>
+                
+                { value 
+                    ?   <Fragment>
+                            <Grid item>
+                                <QRCode />
+                            </Grid> 
+                            <Grid item>
+                                connected clients: {count}
+                            </Grid> 
+                            <Grid item>
+                            <Route render={({ history }) => (
+                                <Button variant="outlined" color="secondary" onClick={() => {this.handleMovePage(history)}}>Next <Icon>chevron_right</Icon></Button>
+                            )} />
+                            </Grid> 
+                        </Fragment>
+                    : null }
+                
+            </Grid>
+        );
+    }
 }
 export default CreateNew;
 

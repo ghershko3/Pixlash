@@ -7,17 +7,16 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
+import Slide from '@material-ui/core/Slide';
+import io from 'socket.io-client';
 
 class DrowingFile extends Component {
     state = {
         selectedType: undefined,
-        inputToDraw: undefined,
-        areaMapping: [
-            {connection: 1, location: [1, 1]},
-            {connection: 2, location: [1, 2]},
-            {connection: 3, location: [2, 1]},
-            {connection: 4, location: [2, 2]},
-        ]
+        input: undefined,
+        areaMapping: [],
+        selectedClients: [],
+        checked: true
     };
 
     handleSelectChange = event => {
@@ -28,29 +27,77 @@ class DrowingFile extends Component {
         this.setState({ [name]: event.target.value });
     };
 
+    editSelectedClients = (client, action) => {
+        const { selectedClients } = this.state
+
+        switch (action) {
+            case 'ADD':
+                this.setState({ selectedClients: [...selectedClients, client] })
+                console.log(selectedClients)
+                break;
+            case 'RM':
+                this.setState({ selectedClients: selectedClients.filter(c => c.id !== client.id) })
+                console.log(selectedClients)
+                break;
+        }  
+        
+    }
+
+    componentDidMount() {
+        try {
+            fetch('/api/getAllClients')
+                .then((res) => {
+                    const json = res.json().then(map => {
+                        this.setState({ areaMapping: map })
+                    })
+                })
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    turnOnLights = () => {
+        let socket = io();
+        const { selectedClients } = this.state;
+        let ids = [];
+        selectedClients.map(c => {
+            ids.push(c.id)
+        })
+
+        io.emit('turnOn', ids);
+    }
+
     render() {
         const { classes } = this.props
-        const { selectedType, inputToDraw, areaMapping } = this.state
+        const { selectedType, input, areaMapping, selectedClients, checked } = this.state
         return (
+            <Slide direction="up" in={checked} unmountOnEnter>
             <form noValidate autoComplete="off"> 
                 <Grid container direction={"column"} alignItems={"center"} justify={"center"} style={{ minHeight: '100vh' }}>
                     <Grid item xs={12}>
-                        <SelectType selectedType={selectedType} handleSelectChange={this.handleSelectChange}/>
+                        <SelectType selectedType={selectedType} handleSelectChange={this.handleSelectChange} />
                     </Grid>
                     {selectedType === 'Text' && 
                     <Grid item xs={12}>
-                        <TextToDrow inputToDraw={inputToDraw} handleInputChange={this.handleInputChange}/>
+                        <TextToDrow input={input} handleInputChange={this.handleInputChange} lbl={"Text To Draw"}/>
                     </Grid>}
                     {selectedType === 'Draw' && 
-                    <Grid item xs={12} style={{ height: '70vh', width: '90vw' }}>
-                        <BoxToDrow areaMapping={areaMapping}/>
+                    <Grid item xs={12}>
+                        <BoxToDrow areaMapping={areaMapping} selectedClients={selectedClients} editSelectedClients={this.editSelectedClients}/>
                     </Grid>}
                     {selectedType !== undefined && 
                     <Grid item xs={12}>
-                        <Button variant="outlined" color="primary" className={classes.button}>Next <Icon>chevron_right</Icon></Button>
+                        {areaMapping.length != 0 
+                        ? <Button variant="outlined" color="secondary" className={classes.button} onClick={() => {this.turnOnLights()}}>
+                                Turn Me ON! 
+                                <Icon>chevron_right</Icon>
+                            </Button> 
+                            : <div className={classes.err}>No Connected Clients</div>}
                     </Grid>}
                 </Grid>
             </form>
+            </Slide>
         );
     }
 }
@@ -62,6 +109,9 @@ const styles = theme => ({
     input: {
       display: 'none',
     },
+    err: {
+        color: 'red'
+    }
   });
 
 
