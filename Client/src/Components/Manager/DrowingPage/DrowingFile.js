@@ -7,11 +7,12 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
+import Slide from '@material-ui/core/Slide';
 
 class DrowingFile extends Component {
     state = {
         selectedType: undefined,
-        inputToDraw: undefined,
+        input: undefined,
         areaMapping: [
             {id: 1, location: [1, 1]},
             {id: 2, location: [1, 2]},
@@ -26,7 +27,8 @@ class DrowingFile extends Component {
             {id: 11, location: [4, 2]},
             {id: 12, location: [4, 3]},
         ],
-        selectedClients: []
+        selectedClients: [],
+        checked: true
     };
 
     handleSelectChange = event => {
@@ -55,16 +57,17 @@ class DrowingFile extends Component {
 
     render() {
         const { classes } = this.props
-        const { selectedType, inputToDraw, areaMapping, selectedClients } = this.state
+        const { selectedType, input, areaMapping, selectedClients, checked } = this.state
         return (
+            <Slide direction="up" in={checked} unmountOnEnter>
             <form noValidate autoComplete="off"> 
                 <Grid container direction={"column"} alignItems={"center"} justify={"center"} style={{ minHeight: '100vh' }}>
                     <Grid item xs={12}>
-                        <SelectType selectedType={selectedType} handleSelectChange={this.handleSelectChange}/>
+                        <SelectType selectedType={selectedType} handleSelectChange={this.handleSelectChange} />
                     </Grid>
                     {selectedType === 'Text' && 
                     <Grid item xs={12}>
-                        <TextToDrow inputToDraw={inputToDraw} handleInputChange={this.handleInputChange}/>
+                        <TextToDrow input={input} handleInputChange={this.handleInputChange} lbl={"Text To Draw"}/>
                     </Grid>}
                     {selectedType === 'Draw' && 
                     <Grid item xs={12}>
@@ -72,10 +75,11 @@ class DrowingFile extends Component {
                     </Grid>}
                     {selectedType !== undefined && 
                     <Grid item xs={12}>
-                        <Button variant="outlined" color="primary" className={classes.button}>Next <Icon>chevron_right</Icon></Button>
+                        <Button variant="outlined" color="secondary" className={classes.button}>Next <Icon>chevron_right</Icon></Button>
                     </Grid>}
                 </Grid>
             </form>
+            </Slide>
         );
     }
 }
