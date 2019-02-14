@@ -7,7 +7,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import Icon from '@material-ui/core/Icon';
 import logo from '../../logo.png';
-          
 
 class ScanningPage extends Component {
   constructor(props) {
