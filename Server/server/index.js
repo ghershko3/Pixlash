@@ -13,68 +13,74 @@ let matrix = [[]];
 let matrixIndex = 1;
 let numberOfClients = 0;
 let lockObject = "";
+let admin = null;
 
 io.on('connection', socket => {
     lock.acquire(lockObject, () => {
-        if (matrixIndex === 1) {
-            matrix[0].push(socket);
-            matrixIndex++;
-        } else {
-            let setValue = false;
-            for (let currRowIndex = 0; currRowIndex < matrixIndex && !setValue; currRowIndex++) {
-                if (currRowIndex === matrix.length) {
-                    matrix.push([]);
+        if (!admin) {
+            admin = socket;
+
+            socket.on("disconnect", () => {
+                if (socket.id == admin.id) {
+                    admin = null;
                 }
-                for (let currColIndex = 0; currColIndex < matrixIndex && !setValue; currColIndex++) {
-                    if (currColIndex > matrix[currRowIndex].length - 1) {
-                        matrix[currRowIndex].push(socket);
-                        setValue = true;
+            });
+
+            socket.on('turnOn', (turnOn) => {
+                for (let currRow = 0; currRow < matrix.length; currRow++) {
+                    for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
+                        if (turnOn.indexOf(matrix[currRow][currCol].id) !== -1) {
+                            matrix[currRow][currCol].emit('turn on', '');
+                        }
                     }
                 }
-            }
+            });
 
-            if (matrix.length === matrixIndex && matrix[matrixIndex - 1].length === matrixIndex) {
+            socket.on('turnOffAll', () => {
+                for (let currRow = 0; currRow < matrix.length; currRow++) {
+                    for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
+                        matrix[currRow][currCol].emit('turn off', '');
+                    }
+                }
+            })
+        } else {
+            let currColIndex = 0, currRowIndex = 0;
+            if (matrixIndex === 1) {
+                matrix[0].push(socket);
                 matrixIndex++;
+            } else {
+                let setValue = false;                
+                for (currRowIndex = 0; currRowIndex < matrixIndex && !setValue; currRowIndex++) {
+                    if (currRowIndex === matrix.length) {
+                        matrix.push([]);
+                    }
+                    for (currColIndex = 0; currColIndex < matrixIndex && !setValue; currColIndex++) {
+                        if (currColIndex > matrix[currRowIndex].length - 1) {
+                            matrix[currRowIndex].push(socket);
+                            setValue = true;
+                        }
+                    }
+                }
+    
+                if (matrix.length === matrixIndex && matrix[matrixIndex - 1].length === matrixIndex) {
+                    matrixIndex++;
+                }                
             }
+
+            socket.on('getSit', () => {
+                socket.emit('setSit', {row: currRowIndex, col: currColIndex});
+            })
+    
+            numberOfClients++;
         }
-
-        socket.on('get id', function(){
-            return socket.id;
-        });
-
-        numberOfClients++;
         return true;
     })
 });
 
-app.use('/api/getClientsCount', (res, res) => {
+app.use('/api/getClientsCount', (req, res) => {
     res.send({
         count: numberOfClients
     });
-});
-
-app.post('/api/turnOn', (req, res) => {
-   let turnOn = req.body.ids;
-
-   for (let currRow = 0; currRow < matrix.length; currRow++) {
-       for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
-           if (turnOn.indexOf(matrix[currRow][currCol].id) !== -1) {
-               matrix[currRow][currCol].emit('turn on', '');
-           }
-       }
-   }
-
-   res.send();
-});
-
-app.use('/api/turnOffAll', (req, res) => {
-    for (let currRow = 0; currRow < matrix.length; currRow++) {
-        for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
-            matrix[currRow][currCol].emit('turn off', '');
-        }
-    }
-
-    res.send();
 });
 
 server.listen(port);
