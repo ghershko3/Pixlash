@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
-import QrReader from 'react-qr-scanner'
+import QrReader from 'react-qr-reader'
 
 class ScanningPage extends Component {
   constructor(props) {
