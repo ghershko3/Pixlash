@@ -1,11 +1,27 @@
-const app = require('express')();
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const express = require('express')
+const app = express();
+var fs = require('fs');
 const port = 82;
-const path = require('path');
 const AsyncLock = require('async-lock');
 var lock = new AsyncLock();
 const bodyParser = require("body-parser");
+
+app.use(express.static('public'))
+
+var server;
+
+if(process.env.NODE_ENV){
+    var options = {
+        key: fs.readFileSync('/tmp/private.key'),
+        cert: fs.readFileSync('/tmp/certificate.crt')
+      };
+      server = require('https').createServer(options, app).listen(443);
+} else{
+    server = require('http').createServer(app).listen(port);
+}
+
+const io = require('socket.io')(server);
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -115,5 +131,3 @@ app.use('/api/getAllClients', (req, res) => {
     }
     res.send(clients);
 });
-
-server.listen(port);
