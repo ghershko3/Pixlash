@@ -43,6 +43,15 @@ class ScanningPage extends Component {
 
 
         <p>{this.state.result} </p>
+
+        <Route render={({ history}) => (
+    <button
+      type='button'
+      onClick={() => { history.push('/CreateNew') }}
+    >
+      <h1>+</h1>
+    </button>
+  )} />
       </div>
     );
   }

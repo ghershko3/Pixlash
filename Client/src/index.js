@@ -7,10 +7,10 @@ import App from './App'
 import DrowingPage from './Components/Manager/DrowingPage/DrowingFile'
 import ScanningPage from './Components/ScanningPage/ScanningPage'
 import PixlePage from './Components/PixlePage/PixlePage'
+import CreateNew from './Components/CreateNew/CreateNew'
 import FlashLight from "./Functionalities/Flashlight";
 
 FlashLight.init()
-
 const routing = (
     <Router>
         <div>
@@ -18,6 +18,7 @@ const routing = (
             <Route path="/DrowingPage" component={DrowingPage} />
             <Route path="/ScanningPage" component={ScanningPage} />
             <Route path="/PixlePage" component={PixlePage} />
+            <Route path="/CreateNew" component={CreateNew} />
         </div>
     </Router>
 )
