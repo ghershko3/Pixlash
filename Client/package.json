@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^3.9.2",
     "lodash": "^4.17.11",
+    "qrcode-react": "^0.1.16",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
     "react-qr-scanner": "0.0.8",
