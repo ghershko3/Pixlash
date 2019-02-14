@@ -55,6 +55,17 @@ class DrowingFile extends Component {
         
     }
 
+    // componentDidMount() {
+    //     try {
+    //         const req = await fetch('/api/getClientsCount')
+    //         const json = await req.json()
+    //         this.setState({ count: json.count })
+    //     }
+    //     catch (err) {
+    //         console.log(err)
+    //     }
+    // }
+
     render() {
         const { classes } = this.props
         const { selectedType, input, areaMapping, selectedClients, checked } = this.state
