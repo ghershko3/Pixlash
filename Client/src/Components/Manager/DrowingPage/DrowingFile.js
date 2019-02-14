@@ -8,25 +8,13 @@ import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import Slide from '@material-ui/core/Slide';
+import io from 'socket.io-client';
 
 class DrowingFile extends Component {
     state = {
         selectedType: undefined,
         input: undefined,
-        areaMapping: [
-            {id: 1, location: [1, 1]},
-            {id: 2, location: [1, 2]},
-            {id: 3, location: [2, 1]},
-            {id: 4, location: [2, 2]},
-            {id: 5, location: [1, 3]},
-            {id: 6, location: [2, 3]},
-            {id: 7, location: [3, 1]},
-            {id: 8, location: [3, 2]},
-            {id: 9, location: [3, 3]},
-            {id: 10, location: [4, 1]},
-            {id: 11, location: [4, 2]},
-            {id: 12, location: [4, 3]},
-        ],
+        areaMapping: [],
         selectedClients: [],
         checked: true
     };
@@ -55,16 +43,30 @@ class DrowingFile extends Component {
         
     }
 
-    // componentDidMount() {
-    //     try {
-    //         const req = await fetch('/api/getClientsCount')
-    //         const json = await req.json()
-    //         this.setState({ count: json.count })
-    //     }
-    //     catch (err) {
-    //         console.log(err)
-    //     }
-    // }
+    componentDidMount() {
+        try {
+            fetch('/api/getAllClients')
+                .then((res) => {
+                    const json = res.json().then(map => {
+                        this.setState({ areaMapping: map })
+                    })
+                })
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    turnOnLights = () => {
+        let socket = io();
+        const { selectedClients } = this.state;
+        let ids = [];
+        selectedClients.map(c => {
+            ids.push(c.id)
+        })
+
+        io.emit('turnOn', ids);
+    }
 
     render() {
         const { classes } = this.props
@@ -86,7 +88,12 @@ class DrowingFile extends Component {
                     </Grid>}
                     {selectedType !== undefined && 
                     <Grid item xs={12}>
-                        <Button variant="outlined" color="secondary" className={classes.button}>Next <Icon>chevron_right</Icon></Button>
+                        {areaMapping.length != 0 
+                        ? <Button variant="outlined" color="secondary" className={classes.button} onClick={() => {this.turnOnLights()}}>
+                                Turn Me ON! 
+                                <Icon>chevron_right</Icon>
+                            </Button> 
+                            : <div className={classes.err}>No Connected Clients</div>}
                     </Grid>}
                 </Grid>
             </form>
@@ -102,6 +109,9 @@ const styles = theme => ({
     input: {
       display: 'none',
     },
+    err: {
+        color: 'red'
+    }
   });
 
 

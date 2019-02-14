@@ -30,71 +30,104 @@ let matrixIndex = 1;
 let numberOfClients = 0;
 let lockObject = "";
 let admin = null;
+let socketIds = [];
+
+entered = (ids) => {
+    for (let i in ids) {
+        if (socketIds.indexOf(i) !== -1) {
+            return true;
+        }
+    }
+
+    return false;
+};
 
 io.on('connection', socket => {
     lock.acquire(lockObject, () => {
+
+        if (!entered(socket.adapter.rooms)) {
+        socketIds.push(socket.id);
         if (!admin) {
             admin = socket;
-
             socket.on("disconnect", () => {
-                if (socket.id == admin.id) {
-                    admin = null;
-                }
+                admin = null;
             });
-
-            socket.on('turnOn', (turnOn) => {
-                for (let currRow = 0; currRow < matrix.length; currRow++) {
-                    for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
-                        if (turnOn.indexOf(matrix[currRow][currCol].id) !== -1) {
-                            matrix[currRow][currCol].emit('turn on', '');
-                        }
-                    }
-                }
-            });
-
-            socket.on('turnOffAll', () => {
-                for (let currRow = 0; currRow < matrix.length; currRow++) {
-                    for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
-                        matrix[currRow][currCol].emit('turn off', '');
-                    }
-                }
-            })
         } else {
             let currColIndex = 0, currRowIndex = 0;
+            let setCol = 1, setRow = 1;
             if (matrixIndex === 1) {
                 matrix[0].push(socket);
                 matrixIndex++;
             } else {
-                let setValue = false;                
+                let setValue = false;
                 for (currRowIndex = 0; currRowIndex < matrixIndex && !setValue; currRowIndex++) {
                     if (currRowIndex === matrix.length) {
                         matrix.push([]);
                     }
-                    for (currColIndex = 0; currColIndex < matrixIndex && !setValue; currColIndex++) {
-                        if (currColIndex > matrix[currRowIndex].length - 1) {
+                    for (currColIndex = 0; currColIndex < matrixIndex - 1 && !setValue; currColIndex++) {
+                        if (currColIndex === matrix[currRowIndex].length - 1) {
                             matrix[currRowIndex].push(socket);
                             setValue = true;
+                            setCol = currColIndex + 1;
+                            setRow = currRowIndex + 1;
                         }
                     }
                 }
-    
+
                 if (matrix.length === matrixIndex && matrix[matrixIndex - 1].length === matrixIndex) {
                     matrixIndex++;
-                }                
+                }
             }
 
             socket.on('getSit', () => {
-                socket.emit('setSit', {row: currRowIndex, col: currColIndex});
+                socket.emit('setSit', {row: setRow, col: setCol});
             })
-    
+
             numberOfClients++;
         }
+    }
+        lockObject = "";
         return true;
     })
+});
+
+io.on('turnOn', (turnOn) => {
+    for (let currRow = 0; currRow < matrix.length; currRow++) {
+        for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
+            if (turnOn.indexOf(matrix[currRow][currCol].id) !== -1) {
+                matrix[currRow][currCol].emit('turn on', '');
+            }
+        }
+    }
+});
+
+io.on('turnOffAll', () => {
+    for (let currRow = 0; currRow < matrix.length; currRow++) {
+        for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
+            matrix[currRow][currCol].emit('turn off', '');
+        }
+    }
+})
+
+app.use('/api/admin', (req, res) => {
+    res.send();
 });
 
 app.use('/api/getClientsCount', (req, res) => {
     res.send({
         count: numberOfClients
     });
+});
+
+app.use('/api/getAllClients', (req, res) => {
+    let clients = [];
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[i].length; j++) {
+            clients.push({
+                id: matrix[i][j].id,
+                location: [i + 1, j + 1]
+            })
+        }
+    }
+    res.send(clients);
 });

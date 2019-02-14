@@ -8,6 +8,7 @@ import Txt from '../Manager/DrowingPage/TextToDrow'
 import Button from '@material-ui/core/Button';
 import Slide from '@material-ui/core/Slide';
 import Icon from '@material-ui/core/Icon';
+import io from 'socket.io-client'
 
 class CreateNew extends Component {
     constructor(props){
@@ -20,7 +21,6 @@ class CreateNew extends Component {
             count: 0
         }
     }
-
 
     handleInputChange = name => event => {
         this.setState({ [name]: event.target.value });
@@ -50,6 +50,28 @@ class CreateNew extends Component {
         history.push('/drowingPage')
     }
     
+  GetCounter = async () => {
+      try {
+          debugger
+          const req = await fetch('/api/getClientsCount')
+          debugger
+          const json = await req.json()
+          debugger
+          this.setState({count: json.count})
+      }
+      catch (err) {
+          console.log(err)
+      }
+  }
+
+    click = () => {
+        this.setState({ value: true }, this.GetCounter)
+    }
+
+    componentDidMount() {
+        new io();
+        // fetch('/api/admin')
+    }
 
 
      render() {

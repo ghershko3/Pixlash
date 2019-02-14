@@ -23,8 +23,8 @@ class SimpleSelect extends React.Component {
         
         const { classes, areaMapping } = this.props;
         
-        const matrixHeight = _.maxBy(areaMapping, 'location[0]').location[0]
-        const matrixWidth = _.maxBy(areaMapping, 'location[1]').location[1]
+        const matrixHeight = areaMapping.length !=0 ? _.maxBy(areaMapping, 'location[0]').location[0] : 1
+        const matrixWidth = areaMapping.length !=0 ?  _.maxBy(areaMapping, 'location[1]').location[1] : 1
 
         return (
             <Grid container direction={"row"} style={{paddingLeft: '5vw'}}>

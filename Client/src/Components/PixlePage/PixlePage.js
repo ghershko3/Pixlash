@@ -6,7 +6,12 @@ import Icon from '@material-ui/core/Icon';
 
 class PixlePage extends Component {
     constructor () {
+        super();
         let socket = io();
+        this.state = {
+            row: null,
+            col: null
+        };
         socket.on('setSit', sit => {
             this.setState({row: sit.row, col: sit.col})
         });
@@ -14,7 +19,6 @@ class PixlePage extends Component {
     }
 
      render() {
-       
         return (
             <Grid container direction={"column"} alignItems={"center"} justify={"center"} style={{ minHeight: '100vh' }}>
                 <Grid item>
