@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async-lock": "^1.1.4",
     "express": "^4.16.4",
     "http-proxy-middleware": "^0.19.1",
     "oracledb": "^3.1.1",
