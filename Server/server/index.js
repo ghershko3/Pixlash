@@ -103,4 +103,17 @@ app.use('/api/getClientsCount', (req, res) => {
     });
 });
 
+app.use('/api/getAllClients', (req, res) => {
+    let clients = [];
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[i].length; j++) {
+            clients.push({
+                id: matrix[i][j].id,
+                location: [i + 1, j + 1]
+            })
+        }
+    }
+    res.send(clients);
+});
+
 server.listen(port);
