@@ -3,6 +3,7 @@ import logo from '../../logo.png';
 import { Route } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 import QRCode from './QRCode'
+import io from 'socket.io-client'
 
 class CreateNew extends Component {
     constructor(props){
@@ -11,6 +12,12 @@ class CreateNew extends Component {
             value: false
         }
     }
+
+    componentDidMount() {
+        new io();
+        // fetch('/api/admin')
+    }
+
      render() {
          const {value} = this.state
         return (
