@@ -13,11 +13,18 @@ class DrowingFile extends Component {
         selectedType: undefined,
         inputToDraw: undefined,
         areaMapping: [
-            {connection: 1, location: [1, 1]},
-            {connection: 2, location: [1, 2]},
-            {connection: 3, location: [2, 1]},
-            {connection: 4, location: [2, 2]},
-            {connection: 4, location: [3, 1]},
+            {id: 1, location: [1, 1]},
+            {id: 2, location: [1, 2]},
+            {id: 3, location: [2, 1]},
+            {id: 4, location: [2, 2]},
+            {id: 5, location: [1, 3]},
+            {id: 6, location: [2, 3]},
+            {id: 7, location: [3, 1]},
+            {id: 8, location: [3, 2]},
+            {id: 9, location: [3, 3]},
+            {id: 10, location: [4, 1]},
+            {id: 11, location: [4, 2]},
+            {id: 12, location: [4, 3]},
         ],
         selectedClients: []
     };
@@ -31,15 +38,16 @@ class DrowingFile extends Component {
     };
 
     editSelectedClients = (client, action) => {
+        const { selectedClients } = this.state
+
         switch (action) {
             case 'ADD':
-                [...selectedClients, client]
+                this.setState({ selectedClients: [...selectedClients, client] })
+                console.log(selectedClients)
                 break;
             case 'RM':
-                selectedClients.map(c => {if(c.id != client.id) return c})
-                break;
-            case 'CHECK':
-                selectedClients.map(c => {if(c.id != client.id) return c})
+                this.setState({ selectedClients: selectedClients.filter(c => c.id !== client.id) })
+                console.log(selectedClients)
                 break;
         }  
         
@@ -59,8 +67,8 @@ class DrowingFile extends Component {
                         <TextToDrow inputToDraw={inputToDraw} handleInputChange={this.handleInputChange}/>
                     </Grid>}
                     {selectedType === 'Draw' && 
-                    <Grid item xs={12} style={{ height: '70vh', width: '90vw' }}>
-                        <BoxToDrow areaMapping={areaMapping} selectedClients={selectedClients}/>
+                    <Grid item xs={12}>
+                        <BoxToDrow areaMapping={areaMapping} selectedClients={selectedClients} editSelectedClients={this.editSelectedClients}/>
                     </Grid>}
                     {selectedType !== undefined && 
                     <Grid item xs={12}>
