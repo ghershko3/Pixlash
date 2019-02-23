@@ -58,14 +58,22 @@ class DrowingFile extends Component {
     }
 
     turnOnLights = () => {
-        let socket = io();
+        // let socket = io();
         const { selectedClients } = this.state;
         let ids = [];
         selectedClients.map(c => {
             ids.push(c.id)
         })
-
-        io.emit('turnOn', ids);
+        console.log(ids)
+        fetch('/api/turnOn', {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+            body: JSON.stringify(ids)
+        })
+        // socket.emit('turnOn', ids);
     }
 
     render() {

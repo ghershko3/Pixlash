@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import io from 'socket.io-client'
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
+import FlashLight from '../../Functionalities/Flashlight';
 
 
 class PixlePage extends Component {
@@ -15,6 +16,9 @@ class PixlePage extends Component {
         socket.on('setSit', sit => {
             this.setState({row: sit.row, col: sit.col})
         });
+        socket.on('turn on', () => {
+            FlashLight.on()
+        })
         socket.emit('getSit', "");
     }
 

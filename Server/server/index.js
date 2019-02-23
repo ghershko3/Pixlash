@@ -33,11 +33,11 @@ let admin = null;
 let socketIds = [];
 
 entered = (ids) => {
-    for (let i in ids) {
-        if (socketIds.indexOf(i) !== -1) {
-            return true;
-        }
-    }
+    // for (let i in ids) {
+    //     if (socketIds.indexOf(i) !== -1) {
+    //         return true;
+    //     }
+    // }
 
     return false;
 };
@@ -52,6 +52,24 @@ io.on('connection', socket => {
             socket.on("disconnect", () => {
                 admin = null;
             });
+
+            // socket.on('turnOn', (turnOn) => {
+            //     for (let currRow = 0; currRow < matrix.length; currRow++) {
+            //         for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
+            //             if (turnOn.indexOf(matrix[currRow][currCol].id) !== -1) {
+            //                 matrix[currRow][currCol].emit('turn on', '');
+            //             }
+            //         }
+            //     }
+            // });
+            
+            // socket.on('turnOffAll', () => {
+            //     for (let currRow = 0; currRow < matrix.length; currRow++) {
+            //         for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
+            //             matrix[currRow][currCol].emit('turn off', '');
+            //         }
+            //     }
+            // })
         } else {
             let currColIndex = 0, currRowIndex = 0;
             let setCol = 1, setRow = 1;
@@ -91,7 +109,9 @@ io.on('connection', socket => {
     })
 });
 
-io.on('turnOn', (turnOn) => {
+app.post('/api/turnOn', (req, res) => {
+    let turnOn = req.body.ids;
+    console.log(turnOn);
     for (let currRow = 0; currRow < matrix.length; currRow++) {
         for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
             if (turnOn.indexOf(matrix[currRow][currCol].id) !== -1) {
@@ -99,14 +119,16 @@ io.on('turnOn', (turnOn) => {
             }
         }
     }
-});
+    res.send();
+})
 
-io.on('turnOffAll', () => {
+app.get('/api/turnOffAll', () => {
     for (let currRow = 0; currRow < matrix.length; currRow++) {
         for (let currCol = 0; currCol < matrix[currRow].length; currCol++) {
             matrix[currRow][currCol].emit('turn off', '');
         }
     }
+    res.send()
 })
 
 app.use('/api/admin', (req, res) => {
